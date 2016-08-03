@@ -1,0 +1,232 @@
+<!doctype html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+    <title>App Manifest Generator</title>
+    <!-- Compiled and minified CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/styles/xcode.min.css">
+    <link rel="stylesheet" href="bower_components/materialize-colorpicker/dist/css/materialize-colorpicker.min.css">
+    <link rel="icon" href="images/icons/icon-72x72.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.2.0/highlight.min.js"></script>
+    <style type="text/css">
+      #output {
+        padding: 16px;
+        background: #fafafa;
+        border-radius: 5px;
+      }
+
+      .desc {
+        font-size: 1.1em;
+      }
+
+      .input-field input[type=text]:focus + label {
+        color: #1565c0;
+      }
+
+      .input-field input[type=text]:focus, .input-field input[type=text].valid {
+        border-bottom: 1px solid #1565c0;
+        box-shadow: 0 1px 0 0 #1565c0;
+      }
+
+      #scope {
+        font-family: monospace;
+      }
+
+      .file-field .material-icons {
+        vertical-align: middle;
+      }
+
+      .file-field .btn {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .dropdown-content li>a, .dropdown-content li>span {
+        color: #1565c0;
+      }
+
+      nav.nav-wrapper {
+        background-color: #2196F3;
+      }
+
+      footer {
+        font-size: 14px;
+        color: #aaa;
+      }
+
+      #footer a {
+        padding: 16px;
+        color: #1565c0;
+        margin-top: 80px;
+      }
+
+      #output-container {
+        position: relative;
+      }
+
+      #copy {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav-wrapper">
+      <a href="index.html" class="brand-logo center">Web App Manifest Generator</a>
+    </nav>
+    <div class="row">
+      <form id="form" class="col m6 s12 row">
+        <p class="desc col s12">The <a href="https://www.w3.org/TR/appmanifest/" target="_blank">Web App Manifest</a>
+        is a JSON document that provides application metadata for <a href="https://developers.google.com/web/progressive-web-apps?hl=en" target="_blank">Progressive Web Apps</a>.
+        Use the form below to generate the JSON file and optionally upload an app icon.</p>
+
+        <div class="input-field col s12 l6">
+          <input placeholder="Placeholder" id="name" name="name" type="text" class="validate">
+          <label for="name" autofocus>App Name</label>
+        </div>
+
+        <div class="input-field col s12 l6">
+          <input placeholder="Placeholder" id="short_name" name="short_name" type="text" class="validate">
+          <label for="short_name">Short Name</label>
+        </div>
+
+        <div class="input-field col s12 l6">
+          <input placeholder="Placeholder" id="theme_color" name="theme_color" type="text" class="validate color" value="#2196F3">
+          <label for="theme_color">Theme Color</label>
+        </div>
+
+        <div class="input-field col s12 l6">
+          <input placeholder="Placeholder" id="background_color" name="background_color" type="text" class="validate color" value="#2196F3">
+          <label for="background_color">Background Color</label>
+        </div>
+
+        <div class="input-field col s12 l6">
+          <select id="display" name="display">
+            <option value="browser" selected>Browser</option>
+            <option value="standalone">Standalone</option>
+            <option value="minimal-ui">Minimal UI</option>
+            <option value="fullscreen">Fullscreen</option>
+          </select>
+          <label for="display">Display Mode</label>
+        </div>
+
+        <div class="input-field col s12 l6">
+          <select id="orientation" name="orientation">
+            <option value="" selected>Any</option>
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+          <label for="orientation">Orientation</label>
+        </div>
+
+        <div class="input-field col s12 l6 mono">
+          <input placeholder="Placeholder" id="scope" name="scope" type="text" class="validate" value="/">
+          <label for="scope">Application Scope</label>
+        </div>
+
+        <div class="input-field col s12 l6 mono">
+          <input placeholder="Placeholder" id="start_url" name="start_url" type="text" class="validate" value="/">
+          <label for="start_url">Start URL</label>
+        </div>
+      </form>
+
+      <section class="col m6 s12 row">
+        <div class="col s12">
+          <h5>manifest.json</h5>
+          <div id="output-container">
+            <button id="copy" class="btn waves-effect waves-light blue-grey" data-clipboard-target="#output" type="submit" name="action">Copy</button>
+            <pre><code id="output" class="json"></code></pre>
+          </div>
+          <h5>Generate Icons</h5>
+          <p>The Web App Manifest allows for specifying icons of varying sizes.
+          Upload a <code>512x512</code> image for the icon and we'll generate
+          the remaining sizes.</p>
+
+        </div>
+
+        <form id="upload" class="col s12 row" action="https://app-manifest.appspot.com/upload" method="post" enctype="multipart/form-data">
+          <input type="hidden" id="manifest" name="manifest" hidden>
+
+          <div class="file-field input-field col s12">
+            <div class="btn blue">
+              <span><i class="medium material-icons">file_upload</i> Icon</span>
+              <input type="file" name="icon">
+            </div>
+            <div class="file-path-wrapper">
+              <input name="icon" class="file-path validate" type="text">
+            </div>
+          </div>
+
+          <p class="center col s12">
+            <button class="btn waves-effect waves-light green" type="submit" name="action">Generate .ZIP</button>
+          </p>
+        </form>
+      </section>
+    </div>
+
+    <footer class="center">
+      Hosted on <a target="_blank" href="https://firebase.google.com/">Firebase</a>.<!-- open source <a target="_blank" href="https://github.com/mbleigh/app-manifest-generator">on GitHub</a>.-->
+    </footer>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <script src="bower_components/materialize-colorpicker/dist/js/materialize-colorpicker.min.js"></script>
+    <script src="bower_components/clipboard/dist/clipboard.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('select').material_select();
+      });
+
+      $('input.color').colorpicker({align: 'left'}).on('changeColor', update);
+
+      window.manifest = {
+        language: "en"
+      }
+
+      $('#form input').on('keyup', update);
+      $('#form select').on('change', update);
+      function update() {
+        $('input.color').each(function(i, el) {
+          $(el).css({
+            'border-bottom-color': el.value,
+            'box-shadow': '0 1px 0 0 ' + el.value,
+            'color': el.value
+          });
+          if ($(el).attr('name') === 'theme_color') {
+            $('nav').css('background-color', el.value);
+          }
+        });
+        window.manifest = $('#form').serializeArray().reduce(function(obj, item) {
+          if (item.value === "") { return obj; }
+          obj[item.name] = item.value;
+          return obj;
+        }, {});
+        $('#manifest').val(JSON.stringify(window.manifest, null, 2));
+        render();
+      }
+
+      function render() {
+        $('#output').text(JSON.stringify(manifest, null, 2)).each(function(i, block) {
+          hljs.highlightBlock(block);
+        });
+      }
+      update();
+
+      var clipboard = new Clipboard('#copy');
+
+      clipboard.on('success', function(e) {
+          Materialize.toast('Copied to clipboard.', 2000);
+      });
+
+      clipboard.on('error', function(e) {
+          Materialize.toast('Unable to copy to clipboard.', 2000);
+      });
+    </script>
+  </body>
+</html>
+
+<!-- Localized -->
